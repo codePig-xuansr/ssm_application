@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.accp.ssm.dao.ILeaveDao">
+	<sql id="query">select * from</sql>
+	
+	<!-- 员工查询自己的请假===部门经理查询自己部门所有人的请假===条件：可按照日期区间查询=== 默认：按照创建时间倒序查询 -->
+	<select id="queryLeaveListBy" resultType="leavelistvo">
+		select lea.`leaveId`,
+		(select `employeeName` from `employee` where `employeeId`=lea.`createMan`) createMan,
+		lea.`createTime`,`totalCount`,
+		`tb_check`.`checkTime`,`tb_check`.`checkComment`,
+		(select `employeeName` from `employee` where `employeeId`=lea.`nextDealMan`) nextDealMan,
+		sta.`statusName`
+		from `tb_leave` lea left join `tb_check`
+		on (`tb_check`.`bizId`=lea.`leaveId` and `tb_check`.`typeId`=lea.`typeId`)
+		join `employee` emp on (emp.`employeeId`=lea.`createMan`)
+		join `tb_status` sta on (lea.`statusId`=sta.`statusId`)
+		<where>
+			<if test="createMan!=0">emp.employeeId = ${createMan}</if>
+			<if test="departmentId!=0">emp.departmentId = ${departmentId}</if>
+			<if test="createTime!=null">and createTime >= #{createTime}</if>
+			<if test="checkTime!=null">and checkTime <![CDATA[ <= #{checkTime} ]]> </if>
+		</where>
+		group by leaveId order by createTime
+	</select>
+	
+	<!-- 请假 -->
+	<insert id="addLeave">
+		insert into tb_leave(createMan,departmentId,startTime,endTime,nextDealMan,event,totalCount,statusId) values (${lea.createMan},${lea.departmentId},'${lea.startTime}','${lea.endTime}',${lea.nextDealMan},'${lea.event}',${lea.totalCount},${lea.statusId})
+	</insert>
+	
+	<resultMap type="com.accp.ssm.vo.LeaveDetailsVO" id="leaveMap">
+		<id column="leaveId" property="leaveId" />
+		<result column="createMan" property="createMan" />
+		<result column="departmentName" property="departmentName" />
+		<result column="startTime" property="startTime" />
+		<result column="endTime" property="endTime" />
+		<result column="totalCount" property="totalCount" />
+		<result column="event" property="event" />
+		<result column="statusName" property="statusName" />
+		<collection property="checks" column="leaveId" select="queryCheckList"></collection>
+	</resultMap>
+	
+	<select id="queryCheckList" resultType="LeaveCheckListVO">
+		select `checkId`,
+		(select `employeeName` from `employee` where `employeeId`=ck.`checkMan`) checkMan,
+		`checkComment`,`checkTime`,
+		(select `resultName` from `check_result` where `resultId`=ck.`checkResult`) checkResult
+		from `tb_check` ck where `bizId`=#{0}
+		and typeid=1
+		order by `checkTime` desc
+	</select>
+	
+	<!-- 查询请假详情 -->
+	<select id="queryLeaveDetailsById" resultMap="leaveMap">
+		select `leaveId`,
+		(select `employeeName` from `employee` where `employeeId`=lea.`createMan`) createMan,
+		(select `departmentName` from `department` where `departmentId`=lea.`departmentId`) departmentName,
+		`startTime`,`endTime`,`totalCount`,`event`,
+		(select `statusName` from `tb_status` where `statusId`=lea.`statusId`) statusName
+		from `tb_leave` lea where lea.`leaveId`=#{leaveId}
+	</select>
+	
+	<!-- 审批请假并修改审批状态和下一个处理人 -->
+	<update id="modifyLeave">
+		update `tb_leave` set nextDealMan=${nextMan},statusId=${statusId} where leaveId=${leaveid}
+	</update>
+	
+	<!-- 审批请假后新增一条审查结果 -->
+	<insert id="addCheck">
+		insert into `tb_check`(`bizId`,`typeId`,`checkMan`,`checkResult`,`checkComment`)
+		values(${ck.bizId},${ck.typeId},${ck.checkMan},${ck.checkResult},#{ck.checkComment})
+	</insert>
+</mapper>

@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+
+
+</head>
+<body>
+<div id="box">
+			<div class="action  divaction" style="padding-bottom: 0px;">
+				<div class="t">月度统计详情</div>
+				<div class="pages">
+					<form id="claimVoucherStatistics_createDetailExcel_action"
+						name="queryForm" method="get"
+						action="../jboa/statistics/monthExcel">
+						<label for="time">年份:</label> {{year}} <label for="end-time">月份:</label>
+						{{month}} <input type="hidden" name="year" v-model="year" value=""
+							id="claimVoucherStatistics_createDetailExcel_action_year">
+						<input type="hidden" name="selectMonth" value="1"
+							id="claimVoucherStatistics_createDetailExcel_action_selectMonth">
+						<input type="hidden" name="departmentId" value="1"
+							id="claimVoucherStatistics_createDetailExcel_action_departmentId">
+						<input @click="exportExcel" type="button"
+							id="claimVoucherStatistics_createDetailExcel_action_0" value="导出报表"
+							class="submit_01">
+		
+					</form>
+		
+					<table width="90%" border="0" cellspacing="0" cellpadding="0"
+						class="list items">
+						<thead>
+							<tr class="even">
+								<td>编号</td>
+								<td v-show="isShow">报销人</td>
+								<td>报销总额</td>
+								<td>年份</td>
+								<td>月份</td>
+								<td>部门</td>
+							</tr>
+						</thead>
+						<tbody>
+							
+								<tr v-for="(temp,i) in info">
+									<td>{{i+1}}</td>
+									<td v-show="isShow">{{temp.employeeName}}</td>
+									<td>￥{{temp.money}}.0</td>
+									<td>{{temp.year}}年</td>
+									<td>{{temp.month}}月</td>
+									<td>{{temp.departmentName}}</td>
+								</tr>
+							
+							<tr>
+								<td></td>
+								<td bgcolor="yellow">总计</td>
+								<td bgcolor="yellow">￥{{sum}}.0</td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- <span style="display: none;"><iframe id="downloadIframe" src=""
+						style="width: 0px; height: 0px;"></iframe></span>
+				增加报销单 区域 结束 -->
+			</div>
+			<div id="echartsDom" style='width:702px;heigth:400px;background:#fff;clear: both;padding-top: 20px;padding-left: 40px;'>
+				
+			</div>
+			<div style="width:542px;background:#fff;padding-left: 200px;">
+				<input type="button" class="submit_01" value="查看柱状图" @click="initEcharts('bar')"/>
+				<input type="button" class="submit_01" value="查看饼图" @click="initEcharts('pie')"/>
+				<input type="button" class="submit_01" value="查看曲线图" @click="initEcharts('line')"/>
+			</div>
+</div>			
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/echarts.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+	var vm=new Vue({
+		el:"#box",
+		data:{
+			isShow:true,
+			employye:{},
+			info:{},
+			year:{},
+			month:{},
+			sum:{},
+			datas:[]
+		},
+		methods:{
+			initEcharts(type){
+				var data = JSON.parse(JSON.stringify(this.info));
+				var xAxis = new Array();
+				var legend = new Array(); 
+				for(var i=0;i<data.length;i++){
+					if(this.employye.positionId==0){
+						xAxis[i] = data[i].departmentName;
+					}else{
+						xAxis[i] = data[i].employeeName;
+					}
+					legend[i] = data[i].money;
+				}
+				var year = this.year;
+				var month = this.month;
+				var departmentName;
+				if(this.employye.positionId==0){
+					departmentName='总经理';
+				}else{
+					departmentName = this.employye.departmentName;
+				}
+				var option = null;
+				if(type=='bar'){
+					option = {
+					    title: {
+					    	text: year+'年'+month+'月'+departmentName+'月度报销统计图'
+					    },
+					    tooltip: {},
+					    legend: {
+					        data:['报销金额']
+					    },
+					    xAxis: {
+					        data: xAxis
+					    },
+					    yAxis: {},
+					    series: [{
+					        name: '报销金额',
+					        type: 'bar',
+					        barWidth : 30,
+					        data: legend
+					    }]
+					};
+				}else if(type=="pie"){
+					option = {
+					    title: {
+					    	 text: year+'年'+month+'月'+departmentName+'月度报销统计图'
+					    },
+					    tooltip: {},
+					    series: [{
+					        name: '报销金额',
+					        type: 'pie',
+					        radius:'60%',
+					        label : {
+					        	normal : {
+					        		formatter: '{b}: ({d}%)',
+					        		textStyle : {
+						        		fontWeight : 'normal',
+						        		fontSize : 15
+					        		}
+					        	}
+					        }
+					    }],
+					    dataset:{
+					    	source:data
+					    }
+					};
+				}else{
+					option = {
+					    title: {
+					    	text: year+'年'+month+'月'+departmentName+'月度报销统计图'
+					    },
+					    tooltip: {},
+					    legend: {
+					        data:['报销金额']
+					    },
+					    xAxis: {
+					        data: xAxis
+					    },
+					    yAxis: {},
+					    series: [{
+					        name: '报销金额',
+					        type: 'line',
+					        barWidth : 30,
+					        data: legend
+					    }]
+					};
+				}
+				var dom = document.getElementById('echartsDom');
+				$("#echartsDom").height('400px');
+				var myChart = echarts.init(dom);
+				if (myChart != null && myChart != "" && myChart != undefined) {//关键
+			        myChart.dispose();
+			    }
+				var myChart = echarts.init(dom);
+				myChart.setOption(option);
+			},
+			exportExcel(){
+				let _this=this;
+				let datas=[];
+				for (var i = 0; i < this.info.length; i++) {
+					datas.push([_this.info[i].countId,_this.info[i].employeeName,_this.info[i].money,_this.info[i].departmentName]);
+				}
+				console.info(datas);
+				$.getJSON(`/ssm_application/api/excel/excelByMonth/${this.year}/${this.month}/${this.employye.departmentId}`,function(res){
+					if(res=="ok"){
+						alert("导出成功");
+					}else{
+						alert("错误导出");
+					}
+				})
+			}
+		},
+		mounted:function(){
+			let _this=this;
+			this.year=localStorage.getItem("year");
+			this.month=localStorage.getItem("month");
+			this.sum=localStorage.getItem("sum");
+			$.getJSON(`/ssm_application/api/users/user/session`,function(res){
+				_this.employye=res;
+				if(res.positionId==0 || res.positionId==3){
+					_this.isShow=false;
+				}
+				$.getJSON(`/ssm_application/api/counts/count/${_this.year}/${_this.month}/${_this.employye.departmentId}`,function(data){
+					_this.info=data;
+					console.info(_this.info);
+				})
+			})
+		}
+	})
+	
+</script>
+</html>

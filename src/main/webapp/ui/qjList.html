@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<input id="empid" type="text" value="" style="display: none">
+	<div class="action  divaction">
+		<div class="t">请假列表</div>
+		<div class="pages">
+			<div class="forms">
+					<label for="time">开始时间</label> <input type="date" name="startDate" value=""
+								id="startDate" class="nwinput"> <label
+						for="end-time">结束时间</label> 
+						<input type="date" name="endDate" value=""
+								id="endDate" class="nwinput">
+						<select id="selectType">
+						<option value="0">个人请假</option>
+						<option value="1">部门请假</option>
+						</select>
+						<input
+						type="hidden" name="pageNo" value="1"> <input
+						type="hidden" name="pageSize" value="5"> <input
+						type="button" id="leave_searchLeave_action_0" value="查询"
+						class="submit_01">
+			</div>
+			<!--增加报销单 区域 开始-->
+			<table id="vmLeave" width="90%" border="0" cellspacing="0" cellpadding="0"
+				class="list items">
+				<thead>
+					<tr class="even">
+						<td>编号</td>
+						<td>名称</td>
+						<td>发起时间</td>
+						<td>审批时间</td>
+						<td>审批意见</td>
+						<td>待处理人</td>
+						<td>审批状态</td>
+						<td>操作</td>
+					</tr>
+				</thead>
+				<tbody id="tab">
+					
+						<!-- <tr v-for="(temp,index) in pageinfo.list">
+							<td><a href="javascript:void(0)">{{temp.leaveId}}</a></td>
+							<td><span>{{temp.employeeName}}</span>请假<span>{{temp.totalCount}}</span>天</td>
+							<td>{{temp.createTime}}</td>
+							<td>{{temp.checkTime}}</td>
+							<td>{{temp.resultName}}</td>
+							<td>
+								{{temp.nextDealMan}}
+							</td>
+							<td>
+								{{temp.statusName}}
+								<input id="checkId" type="hidden" value="temp.checkId" />
+							</td>
+							<td>
+								<a href="qjxq.html">
+									<img src="../images/search.gif" width="16" height="15">
+								</a>
+								<template v-if="">
+									<a href="qjxq.html">
+										<img src="../images/sub.gif" width="16" height="15">
+									</a>
+								</template>
+							</td>
+						</tr> -->
+					
+
+					<!-- <tr>
+						<td><a href="leave_getLeaveById.action?leave.id=143">143</a></td>
+						<td>张平请假1.0天</td>
+						<td>2013-09-09 15:10</td>
+						<td></td>
+						<td></td>
+						<td>待审批</td>
+						<td>
+							<a href="claimVoucher_toUpdate.action?claimVoucher.id=133">
+									<img src="../images/edit.gif" width="16" height="16">
+							</a> 
+							<a onclick="delVoucher(133)" href="#"> <img
+								src="../images/delete.gif" width="16" height="16">
+							</a> 
+							<a target="rightFrame" href="leaveDetail.jsp"><img
+								src="../images/search.gif" width="16" height="15"></a>
+							<a target="rightFrame" href="leaveCheck.jsp"> <img
+								src="../images/sub.gif" width="16" height="16"></a>
+						</td>
+					</tr> -->
+
+					<!-- <tr>
+						<td colspan="7" align="center">
+							<div class="page-bar">
+
+								<a id="first" href="javascript:void(0);">首页</a>
+								&nbsp;&nbsp;
+								
+								&nbsp;&nbsp;
+								
+									<a id="next" href="javascript:void(0);">下一页</a>
+								
+								&nbsp;&nbsp; <a id="last" href="javascript:void(0);">末页</a>							
+								&nbsp;&nbsp; &nbsp;&nbsp;第 <span class="pageNum"></span>页/共<span class="pages"></span>页&nbsp;&nbsp;共<span class="totals"></span>条记录
+							</div>
+						</td>
+					</tr> -->
+				</tbody>
+			</table>
+			<!--请假 区域 结束-->
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="../js/jq_ajax_config.js" ></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#endDate").change(function(){
+		var sDate = $("#startDate").val();
+		var eDate = $(this).val();
+		if(sDate != ""){
+			sDate = new Date(sDate.replace(/-/g, "/"));
+			eDate = new Date(eDate.replace(/-/g, "/"));
+			var days = eDate.getTime() - sDate.getTime();
+			var time = parseInt(days / (1000 * 60 * 60 * 24));
+			if(time <= 0){
+				alert("请选择正确的日期");
+				$(this).val("");
+				return false;
+			}else{
+				$("#totalCount").text(time);
+				$("[name='totalCount']").val(time);
+			}
+		}
+	});
+});
+	
+	var emp=JSON.parse(localStorage.getItem("user"));
+	if(emp["positionId"]==1 || emp["positionId"]==4){
+		$("#selectType").show();
+	}else{
+		$("#selectType").hide();
+	}
+	var pageInfo;
+	
+	$("#leave_searchLeave_action_0").click(function(){
+		let empid=emp["employeeId"];
+		let depid=0;
+		if($("#selectType").val()==1){
+			depid=emp["departmentId"];
+			if(emp["positionId"]==4){
+				depid=0;
+			}
+			empid=0;
+		}
+		let stime=$("#startDate").val();
+		let etime=$("#endDate").val();
+		if(stime==""){
+			stime="0";
+		}
+		if(etime==""){
+			etime="0";
+		}
+		LoadList(1,empid,depid,stime,etime);
+	})
+	
+	LoadList(1,emp["employeeId"],0,"0","0");
+	
+	function LoadList(pageNum,empid,depid,stime,etime){
+		$.ajax(`/ssm_application/api/leaves/${pageNum}/${empid}/${depid}/${stime}/${etime}`,{
+			type:"get",
+			dataType:"json",
+			contenType:"application/json",
+			success:function(data){
+				pageInfo=data;
+				$("#tab").empty();
+				$.each(data.list,function(i,obj){
+					let $tr=$(`<tr></tr>`);
+					let $td=$(`<td></td>`);
+					$tr.append(`<td><a href="">${obj.leaveId}</a></td>`);
+					$tr.append(`<td>${obj.createMan}请假${obj.totalCount}天</td>`);
+					$tr.append(`<td>${obj.createTime}</td>`);
+					if(obj.checkTime!=null){
+						$tr.append(`<td>${obj.checkTime}</td>`);
+					}else{
+						$tr.append(`<td></td>`);
+					}
+					if(obj.checkComment!=null){
+						$tr.append(`<td>${obj.checkComment}</td>`);
+					}else{
+						$tr.append(`<td></td>`);
+					}
+					$tr.append(`<td>${obj.nextDealMan}</td>`);
+					$tr.append(`<td>${obj.statusName}</td>`);
+					$td.append(`<a target="rightFrame" href="javascript:qjxq(${obj.leaveId},0);"><img
+							src="../images/search.gif" width="16" height="15"></a>`);
+					if(obj.nextDealMan==emp["employeeName"]){
+						if(emp["positionId"]==4){
+							$td.append(`<a target="rightFrame" href="javascript:qjxq(${obj.leaveId},2);"> <img
+							src="../images/sub.gif" width="16" height="16"></a>`);
+						}else{
+							$td.append(`<a target="rightFrame" href="javascript:qjxq(${obj.leaveId},1);"> <img
+							src="../images/sub.gif" width="16" height="16"></a>`);
+						}
+					}
+					$tr.append($td);
+					$("#tab").append($tr);
+				})
+				$("#tab").append(`<tr>
+						<td colspan="7" align="center">
+							<div class="page-bar">
+
+								<a id="first" href="javascript:void(0);">首页</a>
+								&nbsp;&nbsp;
+								
+								&nbsp;&nbsp;
+								
+									<a id="next" href="javascript:void(0);">下一页</a>
+								
+								&nbsp;&nbsp; <a id="last" href="javascript:void(0);">末页</a>							
+								&nbsp;&nbsp; &nbsp;&nbsp;第${data.pageNum}页/共${data.pages}页&nbsp;&nbsp;共${data.total}条记录
+							</div>
+						</td>
+					</tr>`);
+				
+				$("#first").click(function(){
+					let empid=emp["employeeId"];
+					let depid=0;
+					if($("#selectType").val()==1){
+						depid=emp["departmentId"];
+						if(emp["positionId"]==4){
+							depid=0;
+						}
+						empid=0;
+					}
+					let stime=$("#startDate").val();
+					let etime=$("#endDate").val();
+					if(stime==""){
+						stime="0";
+					}
+					if(etime==""){
+						etime="0";
+					}
+					if(pageInfo.isFirstPage){
+						alert("已经是第一页了");
+					}else{
+						LoadList(pageInfo.firstPage,empid,depid,stime,etime);
+					}
+				})
+				
+				$("#last").click(function(){
+					let empid=emp["employeeId"];
+					let depid=0;
+					if($("#selectType").val()==1){
+						depid=emp["departmentId"];
+						if(emp["positionId"]==4){
+							depid=0;
+						}
+						empid=0;
+					}
+					let stime=$("#startDate").val();
+					let etime=$("#endDate").val();
+					if(stime==""){
+						stime="0";
+					}
+					if(etime==""){
+						etime="0";
+					}
+					if(pageInfo.isLastPage){
+						alert("已经是最后一页了");
+					}else{
+						LoadList(pageInfo.lastPage,empid,depid,stime,etime);
+					}
+				})
+				
+				$("#next").click(function(){
+					let empid=emp["employeeId"];
+					let depid=0;
+					if($("#selectType").val()==1){
+						depid=emp["departmentId"];
+						if(emp["positionId"]==4){
+							depid=0;
+						}
+						empid=0;
+					}
+					let stime=$("#startDate").val();
+					let etime=$("#endDate").val();
+					if(stime==""){
+						stime="0";
+					}
+					if(etime==""){
+						etime="0";
+					}
+					if(pageInfo.hasNextPage){
+						LoadList(pageInfo.nextPage,empid,depid,stime,etime);
+					}else{
+						alert("没有下一页了")
+					}
+				})
+			}
+		})
+	}
+	
+	function qjxq(leaveid,type){
+		localStorage.setItem("leaveid",leaveid);
+		localStorage.setItem("type",type);
+		location.href='qjxq.html';
+	}
+</script>
+</html>

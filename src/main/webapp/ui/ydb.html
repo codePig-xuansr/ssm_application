@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+
+<body>
+	<div class="action  divaction">
+		<div class="t">月度统计列表</div>
+		<div class="pages">
+			<form id="claimVoucherStatistics_getDeptStatisticsByMonth_action"
+				name="queryForm"
+				action="../jboa/statistics/monthList?pageNum=1&pageSize=10"
+				method="get">
+				<label for="time">年份</label> <select v-model="year" name="year"
+					id="claimVoucherStatistics_getDeptStatisticsByMonth_action_year">
+					<option value="0">无</option>
+					
+						
+							
+							
+								<option value="2013">2013年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2014">2014年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2015">2015年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2016">2016年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2017">2017年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2018">2018年</option>
+							
+						
+					
+				</select> <label for="time">开始月份</label> <select v-model="startmonth" name="startMonth"
+					id="claimVoucherStatistics_getDeptStatisticsByMonth_action_startMonth">
+					<option value="0">无</option>
+					
+						
+							
+							
+								<option value="1">1月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="2">2月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="3">3月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="4">4月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="5">5月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="6">6月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="7">7月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="8">8月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="9">9月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="10">10月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="11">11月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="12">12月份</option>
+							
+						
+					
+				</select> <label for="end-time">结束月份</label> <select v-model="endmonth" name="endMonth"
+					id="claimVoucherStatistics_getDeptStatisticsByMonth_action_endMonth">
+					<option value="0">无</option>
+					
+						
+							
+							
+								<option value="1">1月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="2">2月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="3">3月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="4">4月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="5">5月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="6">6月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="7">7月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="8">8月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="9">9月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="10">10月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="11">11月份</option>
+							
+						
+					
+						
+							
+							
+								<option value="12">12月份</option>
+							
+						
+					
+				</select> 
+				<!-- <input type="hidden" name="year" value="2013"/> -->
+				<input type="button"
+					id="claimVoucherStatistics_getDeptStatisticsByMonth_action_0"
+					value="查询" class="submit_01" @click="tofind">
+			</form>
+			<table width="90%" border="0" cellspacing="0" cellpadding="0"
+				class="list items">
+				<thead>
+					<tr class="even">
+						<td>编号</td>
+						<td>总计</td>
+						<td>年份</td>
+						<td>月份</td>
+						
+						<td>操作</td>
+					</tr>
+				</thead>
+				<tbody id="tabs">
+					
+						<tr v-for="(info,index) in pageinfo.list">
+							<td>{{index+1}}</td>
+							<td>￥{{info.money}}.0</td>
+							<td>{{info.year}}年</td>
+							<td>{{info.month}}月</td>
+							
+							<td><a target="rightFrame" @click="ydbxq(info.year,info.month,info.money)" href="#"> 
+									<img src="../images/search.gif" width="16" height="15">
+							</a></td>
+						</tr>
+					
+				</tbody>
+				<tr>
+					<td colspan="7" align="center">
+						<div class="page-bar">
+
+							<a href="#" @click="gofirst">首页</a>
+							&nbsp;&nbsp;
+							
+							&nbsp;&nbsp;
+							
+							&nbsp;&nbsp; <a href="#" @click="golast">末页</a>
+							
+
+							&nbsp;&nbsp; &nbsp;&nbsp;第 <span>{{pageinfo.pageNum}}</span>页/共<span>{{pageinfo.pages}}</span>页&nbsp;&nbsp;共<span>{{pageinfo.total}}</span>条记录
+						
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript">
+	var user=JSON.parse(localStorage.getItem("user"));
+	
+	var vm=new Vue({
+		el:".divaction",
+		data:{
+			pageinfo:{},
+			employye:{},
+			year:{},
+			startmonth:{},
+			endmonth:{}
+		},
+		methods: {
+			tofind(){
+				let _this=this;
+				$.getJSON(`/ssm_application/api/counts/1/${this.year}/${this.startmonth}/${this.endmonth}/${this.employye.departmentId}`,function(res){
+					_this.pageinfo=res;
+				})
+			},
+			gofirst(){
+				let _this=this;
+				if(this.pageinfo.isFirstPage){
+					alert("已经是第一页了")
+				}else{
+					$.getJSON(`/ssm_application/api/counts/${this.pageinfo.firstPage}/${this.year}/${this.startmonth}/${this.endmonth}/${this.employye.departmentId}`,function(res){
+						_this.pageinfo=res;
+					})
+				}
+			},
+			golast(){
+				let _this=this;
+				if(this.pageinfo.isLastPage){
+					alert("已经是最后一页了")
+				}else{
+					$.getJSON(`/ssm_application/api/counts/${this.pageinfo.lastPage}/${this.year}/${this.startmonth}/${this.endmonth}/${this.employye.departmentId}`,function(res){
+						_this.pageinfo=res;
+					})
+				}
+			},
+			ydbxq(year,month,sum){
+				localStorage.setItem("year",year);
+				localStorage.setItem("month",month);
+				localStorage.setItem("sum",sum);
+				location.href='ydbxq.html';
+			}
+		},
+		mounted:function(){
+			let _this=this;
+			$.getJSON(`/ssm_application/api/users/user/session`,function(res){
+				_this.employye=res;
+				$.ajax(`/ssm_application/api/counts/1/0/0/0/${_this.employye.departmentId}`,{
+					type:"get",
+					dataType:"json",
+					contentType:"application/json",
+					success:function(data){
+						_this.pageinfo=data;
+					}
+				})
+			})
+			
+		}
+	})
+	
+</script>
+</head>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+<style>
+	.img{width:40px;height:40px;cursor:pointer;}
+	.weight{font-weight: bold;}
+</style>
+</head>
+<body>
+	<form id="myForm" name="myForm" method="post">
+		<div class="action  divaction">
+			<div class="t">查看报销单</div>
+			<div class="pages">
+				<!--增加报销单 区域 开始-->
+				<table width="90%" border="0" cellspacing="0" cellpadding="0"
+					class="addform-base">
+					<caption>基本信息</caption>
+					<tbody>
+						<tr>
+							<td>编&nbsp;&nbsp;号：<span class="bxid"></span></td>
+							<td>填&nbsp;写&nbsp;人：<span class="cman"></span></td>
+							<td>部&nbsp;&nbsp;门：<span class="dep"></span></td>
+							<td>职&nbsp;&nbsp;位：<span class="pos"></span></td>
+						</tr>
+						<tr>
+							<td>总金额：<span class="tol"></span>.0</td>
+							<td>填报时间：<span class="cdate"></span></td>
+							<td>状态：<span class="statu"></span></td>
+							<td>待处理人：<span class="nextman"></span></td>
+						</tr>
+						<tr>
+							<td colspan="4"><p>-------------------------------------------------------------------------------</p></td>
+						</tr>
+					</tbody>
+				</table>
+				<p>&nbsp;</p>
+				<table width="90%" border="0" cellspacing="0" cellpadding="0"
+					class="addform-base">
+					<thead id="bxts"></thead>
+					<tbody id="bxs">
+						<tr>
+							<td>项目说明</td>
+							<td>项目金额</td>
+							<td>票据截图</td>
+						</tr>
+							<tr>
+								<td>
+									<span>旅游</span>
+								</td>
+								<td>
+									<span>200.0</span>
+								</td>
+								<td><img class="img" src=""></td>
+							</tr>
+						
+
+					</tbody>
+				</table>
+				<p>&nbsp;</p>
+				<p>-------------------------------------------------------------------------------</p>
+
+				<table style="margin-top: 15px;" width="90%" border="0" cellspacing="0" cellpadding="0" class="addform-base">
+					<thead id="cks">
+						<tr>
+								<td width="15%">审查人</td>
+								<td width="40%">审查意见</td>
+								<td width="30%">审查时间</td>
+								<td width="15%">审查结果</td>
+						</tr>
+							<tr>
+								<td>
+									<span>雷军</span>
+								</td>
+								<td>
+									<span></span>
+								</td>
+								<td>
+									<span>2019-12-30 11:25:00</span>
+								</td>
+								<td>
+									<span class="weight">通过</span>
+								</td>
+							</tr>
+					</thead>
+					<tbody id="ck">
+						<tr>
+							<td>审批意见：</td>
+						</tr>
+						<tr>
+							<td><textarea name="checkComment" id="textarea" cols="45" rows="5"></textarea></td>
+						</tr>
+						<tr>
+							<td colspan="3" class="submit">
+								<input type="button" name="button" id="agree" value="审批通过" class="submit_01"> 
+								<input type="button" name="button" id="dahui" value="打回" class="submit_01">
+								<input id="jj" type="button" name="button" id="jj" value="审批拒绝" class="submit_01">
+							</td>
+						</tr>
+					</tbody>
+
+				</table>
+				<p>&nbsp;</p>
+
+				<p>&nbsp;</p>
+				<p>
+					<input type="button" value="返回" onclick="window.history.go(-1)"
+						class="submit_01">
+				</p>
+				<!--增加报销单 区域 结束-->
+			</div>
+		</div>
+	</form>
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript">
+	var user=JSON.parse(localStorage.getItem("user"));
+	var id=localStorage.getItem("bxid");
+	var bxt=localStorage.getItem("bxt");
+	console.info(user);
+	if(bxt==1){
+		$("#ck").hide();
+	}else if(bxt==2){
+		$("#ck").show();
+		if(user["positionId"]==3){
+			$("#jj").hide();
+		}else if(user["positionId"]==5){
+			$("#jj").hide();
+			$("#dahui").hide();
+		}
+	}
+	
+	function addCount(){
+			var count={};
+			count["money"]=localStorage.getItem("money");
+			count["year"]=new Date().getFullYear();
+			count["month"]=new Date().getMonth()+1;
+			count["departmentId"]=localStorage.getItem("depid");
+			count["employeeId"]=localStorage.getItem("empid");
+			count["departmentName"]=localStorage.getItem("depname");
+			count["employeeName"]=localStorage.getItem("empname");
+			
+			$.ajax(`/ssm_application/api/counts/count`,{
+				type:"post",
+				dataType:"json",
+				contentType:"application/json",
+				data:JSON.stringify(count),
+				success:function(res){
+					console.info("报销打款记录成功");
+					location.href='ckbx.html';
+				}
+			})
+		
+	}
+	
+	Load(id);
+	function Load(id){
+		$.ajax(`/ssm_application/api/bxs/bx/${id}`,{
+			type:"get",
+			dataType:"json",
+			contentType:"application/json",
+			success:function(data){
+				console.info(data);
+				if(user["positionId"]==1){
+					$("#agree").attr("onclick","ck("+data.reimburseId+",3,1001,1)");
+				}else if(user["positionId"]==3){
+					$("#agree").attr("onclick","ck("+data.reimburseId+",3,1002,1)");
+				}else if(user["positionId"]==5){
+					localStorage.setItem("money",data.totalCount);
+					localStorage.setItem("depid",data.departmentId);
+					localStorage.setItem("empid",data.employeeId);
+					localStorage.setItem("depname",data.departmentName);
+					localStorage.setItem("empname",data.createMan);
+					$("#agree").attr("onclick","ck("+data.reimburseId+",5,10000,1)");
+				}else if(user["positionId"]==0){
+					$("#agree").attr("onclick","ck("+data.reimburseId+",3,1001,1)");
+				}
+				$("#dahui").attr("onclick","ck("+data.reimburseId+",6,"+data.employeeId+",3)");
+				$("#jj").attr("onclick","ck("+data.reimburseId+",4,10000,2)");
+				$(".bxid").text(data.reimburseId);
+				$(".cman").text(data.createMan);
+				$(".dep").text(data.departmentName);
+				$(".pos").text(data.positionName);
+				$(".tol").text(data.totalCount);
+				$(".cdate").text(data.createTime);
+				$(".statu").text(data.statusName);
+				$(".nextman").text(data.nextDealMan);
+				$("#bxs").empty();
+				$("#bxts").empty();
+				$("#cks").empty();
+				if(data.bxs[0]!=null){
+					$("#bxts").append(`<tr>
+							<td>项目说明</td>
+							<td>项目金额</td>
+							<td>票据截图</td>
+						</tr>`);
+					$.each(data.bxs,function(i,obj){
+						$("#bxs").append(`
+										<tr>
+											<td>
+												<span>${obj.desc}</span>
+											</td>
+											<td>
+												<span>${obj.subTotal}</span>
+											</td>
+											<td><img class="img" src="${obj.picturePath}"></td>
+										</tr>
+										`);
+					})
+				}
+				
+				if(data.bxCks[0]!=null){
+					$("#cks").append(`<tr>
+							<td width="15%">审查人</td>
+							<td width="40%">审查意见</td>
+							<td width="30%">审查时间</td>
+							<td width="15%">审查结果</td>
+					</tr>`);
+					$.each(data.bxCks,function(i,obj){
+						let $tr=$(`<tr></tr>`);
+						$tr.append(`<td>
+									<span>${obj.checkMan}</span>
+								</td>`);
+						$tr.append(`<td>
+								<span>${obj.checkComment}</span>
+							</td>`);
+						$tr.append(`<td>
+								<span>${obj.checkTime}</span>
+							</td>`);
+						$tr.append(`<td>
+								<span class="weight">${obj.checkResult}</span>
+							</td>`);
+						$("#cks").append($tr);
+					})
+					
+				}
+			}
+		})
+	}
+	
+	function ck(rid,sid,nid,res){
+		let check={};
+		check["bizId"]=rid;
+		check["typeId"]=2;
+		check["checkMan"]=user["employeeId"];
+		check["checkResult"]=res;
+		check["checkComment"]=$("[name=checkComment]").val();
+		$.ajax(`/ssm_application/api/ckbxs/ck/${rid}/${sid}/${nid}`,{
+			type:"put",
+			dataType:"json",
+			contentType:"application/json",
+			async:false,
+			success:function(res){
+				if(res>0){
+					$.ajax(`/ssm_application/api/ckbxs/ck`,{
+						type:"post",
+						dataType:"json",
+						contentType:"application/json",
+						data:JSON.stringify(check),
+						async:false,
+						success:function(data){
+							if(data>0){
+								if(sid==5){
+									addCount();
+								}else{
+									location.href='ckbx.html';
+								}
+							}else{
+								alert("审核出错");
+							}
+						}
+					})
+				}
+			}
+		})
+	}
+</script>
+</html>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.accp.ssm.dao.IBxDao">
+	<select id="queryBxList" resultType="reimbursevo">
+		select bx.`reimburseId`,
+		bx.`createTime`,
+		(select `employeeName` from `employee` where `employeeId`=bx.`createMan`) createMan,
+		(select `employeeId` from `employee` where `employeeId`=bx.`createMan`) employeeId,
+		(select `departmentId` from `employee` where `employeeId`=bx.`createMan`) departmentId,
+		`totalCount`,
+		sta.`statusName`,bx.statusId,
+		(select `employeeName` from `employee` where `employeeId`=bx.`nextDealMan`) nextDealMan,
+		(select `positionName` from `position` pos,`employee` emp where pos.`positionId`=emp.`positionId` and emp.`employeeId`=bx.`createMan`) positionName
+		from `tb_reimburse` bx left join `tb_check` ck
+		on (ck.`bizId`=bx.`reimburseId` and ck.`typeId`=bx.`typeId`)
+		join `employee` emp on (emp.`employeeId`=bx.`createMan`)
+		join `tb_status` sta on (bx.`statusId`=sta.`statusId`)
+		<where>
+			<if test="statusId>1 and departmentId>0">
+				bx.`statusId`=${statusId} or bx.`createMan`=${createMan}
+			</if>
+			<if test="statusId==1 and departmentId>0">
+				bx.`createMan`=${employeeId}
+			</if>
+			<if test="statusId!=0">
+				and bx.`statusId`=${statusId}
+			</if>
+			<if test="statusId==0 and departmentId>0">
+				and bx.`statusId` not in (1)
+			</if>
+			<if test="createMan!=0">and emp.employeeId = ${createMan}</if>
+			<if test="departmentId>0">and emp.departmentId = ${departmentId}</if>
+			<if test="createTime!=null">and createTime >= #{createTime}</if>
+			<if test="checkTime!=null">and checkTime <![CDATA[ <= #{checkTime} ]]> </if>
+			<if test="statusId>1 and departmentId==-1">
+				and bx.`statusId`=${statusId}
+			</if>
+			<if test="statusId==1 and departmentId==-1">
+				and bx.`statusId`=${statusId} and bx.`createMan`=${employeeId}
+			</if>
+			<if test="statusId==0 and departmentId==-1">
+				and bx.`statusId` not in (1)
+			</if>
+		</where>
+		group by `reimburseId` order by createTime desc
+	</select>
+	
+	<resultMap type="com.accp.ssm.vo.ReimburseVO" id="bxmap">
+		<id column="reimburseId" property="reimburseId" />
+		<result column="typeId" property="typeId" />
+		<result column="employeeId" property="employeeId" />
+		<result column="createMan" property="createMan" />
+		<result column="createTime" property="createTime" />
+		<result column="departmentId" property="departmentId" />
+		<result column="departmentName" property="departmentName" />
+		<result column="positionName" property="positionName" />
+		<result column="nextDealMan" property="nextDealMan" />
+		<result column="event" property="event" />
+		<result column="totalCount" property="totalCount" />
+		<result column="statusId" property="statusId" />
+		<result column="statusName" property="statusName" />
+		<collection property="Bxs" column="reimburseId" select="queryBxs"></collection>
+		<collection property="BxCks" column="reimburseId" select="queryBxCks"></collection>
+	</resultMap>
+	
+	<!-- 查询报销审核信息表 -->
+	<select id="queryBxCks" resultType="LeaveCheckListVO">
+		select `checkId`,
+		(select `employeeName` from `employee` where `employeeId`=ck.`checkMan`) checkMan,
+		`checkComment`,`checkTime`,
+		(select `resultName` from `check_result` where `resultId`=ck.`checkResult`) checkResult
+		from `tb_check` ck where `bizId`=#{0}
+		and typeid=2
+		order by `checkTime` desc
+	</select>
+	
+	<!-- 查询报销详表 -->
+	<select id="queryBxs" resultType="bxdetails">
+		select * from `reimburse_detail` where `mainId`=#{0}
+	</select>
+	
+	<!-- 查询报销主表 -->
+	<select id="queryBxDetails" resultMap="bxmap">
+		select `reimburseId`,
+		(select `employeeId`  from `employee` where `employeeId`=re.`createMan`) employeeId,
+		(select `employeeName`  from `employee` where `employeeId`=re.`createMan`) createMan,
+		(select `departmentId` from `department` where `departmentId`=re.`departmentId`) departmentId,
+		(select `departmentName` from `department` where `departmentId`=re.`departmentId`) departmentName,
+		(select `positionName` from `position` pos,`employee` emp where pos.`positionId`=emp.`positionId` and emp.`employeeId`=re.`createMan`) positionName,
+		`totalCount`,`createTime`,`event`,
+		(select `statusName` from `tb_status` where `statusId`=re.`statusId`) `statusName`,
+		(select `employeeName`  from `employee` where `employeeId`=re.`nextDealMan`) nextDealMan
+		from `tb_reimburse` re where `reimburseId`=${reimburseId}	
+	</select>
+	
+	<!-- 报销主详新增 -->
+	<insert id="addBx">
+		insert into `tb_reimburse`(`reimburseId`,`typeId`,`createMan`,`departmentId`,`nextDealMan`,`event`,`totalCount`,`statusId`)
+		values(#{bx.reimburseId},#{bx.typeId},#{bx.createMan},#{bx.departmentId},#{bx.nextDealMan},#{bx.event},#{bx.totalCount},#{bx.statusId});
+		<if test="bx.bxs.size()!=0">
+			insert into `reimburse_detail`(`mainId`,`subTotal`,`desc`,`pictureName`,`picturePath`) values
+			<foreach collection="bx.bxs" item="temp" separator=",">
+				(#{bx.reimburseId},#{temp.subTotal},#{temp.desc},#{temp.pictureName},#{temp.picturePath})
+			</foreach>
+		</if>
+	</insert>
+	
+	<!-- 移除报销 -->
+	<delete id="removeBx">
+		delete from `reimburse_detail` where `mainId`=#{reimburseId};
+		delete from `tb_reimburse` where `reimburseId`=#{reimburseId};
+	</delete>
+	
+	<!-- 修改报销单状态 -->
+	<update id="modifyBx">
+		update `tb_reimburse` set statusId=${statusId},nextDealMan=${nextDealMan} where `reimburseId`=${reimburseId};
+	</update>
+	
+	<!-- 审核报销后新增一条审核记录 -->
+	<insert id="addCheck">
+		insert into `tb_check`(`bizId`,`typeId`,`checkMan`,`checkResult`,`checkComment`)
+		values(${ck.bizId},${ck.typeId},${ck.checkMan},${ck.checkResult},#{ck.checkComment})
+	</insert>
+	
+	<!-- 报销打钱后新增一条打款记录 -->
+	<insert id="addCount">
+		insert into `tb_count`(`money`,`year`,`month`,`departmentId`,`employeeId`,`departmentName`,`employeeName`)
+		values(${count.money},${count.year},${count.month},${count.departmentId},${count.employeeId},#{count.departmentName},#{count.employeeName})
+	</insert>
+	
+	<!-- 查询月度报销单统计列表 -->
+	<select id="getByMonth" resultType="count">
+		select `countId`,SUM(money) as money,`year`,`month`,`departmentId`,`departmentName`,`employeeId`,`employeeName` from `tb_count`
+		<where>
+			<if test="year!=null">
+				year=${year}
+			</if>
+			<if test="sm!=null and em!=null">
+				and month between ${sm} and ${em}
+			</if>
+			<if test="sm!=null and em==null">
+				and month >= ${sm}
+			</if>
+			<if test="em!=null and sm==null">
+				and month <![CDATA[ <= ${em} ]]>
+			</if>
+			<if test="departmentId!=null">
+				and `departmentId`=${departmentId} group by year,month
+			</if>
+		</where>
+		<if test="departmentId==null">
+			where departmentId!=0 group by year,month
+		</if>
+	</select>
+	
+	<!-- 按照具体年月查询月度统计详细 -->
+	<select id="getCountDetailsByMonth" resultType="count">
+		select `countId`,SUM(money) as money,`year`,`month`,`departmentId`,`departmentName`,`employeeId`,`employeeName` from `tb_count`
+		<where>
+			<if test="year!=null">
+				year=${year}
+			</if>
+			<if test="month!=null">
+				and month=${month}
+			</if>
+			<if test="departmentId!=null">
+				and `departmentId`=${departmentId} group by employeeId
+			</if>
+		</where>
+		<if test="departmentId==null">
+			AND departmentId!=0 group by `departmentId`
+		</if>
+	</select>
+	
+	<!-- 查询年度报销单统计列表 -->
+	<select id="getByYear" resultType="count">
+		SELECT `countId`,SUM(money) AS money,`year`,`departmentId`,`employeeId`,`departmentName`,`employeeName` FROM `tb_count`
+		<where>
+			<if test="startYear!=null and endYear!=null">year between ${startYear} and ${endYear}</if>
+			<if test="departmentId!=null">and `departmentId`=${departmentId} group by year</if>
+		</where>
+		<if test="departmentId==null">
+		 group by year
+		</if>
+	</select>
+	
+	<!-- 按照具体年查询年度统计详细 -->
+	<select id="getCountDetailsByYear" resultType="count">
+		select `countId`,SUM(money) as money,`year`,`month`,`departmentId`,`departmentName`,`employeeId`,`employeeName` from `tb_count`
+		<where>
+			<if test="year!=null">
+				year=${year}
+			</if>
+			<if test="departmentId!=null">
+				and `departmentId`=${departmentId} group by employeeId
+			</if>
+		</where>
+		<if test="departmentId==null">
+			group by `departmentId`
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+<link href="../css/style2.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<div class="action  divaction" id="${qjxq.leaveId }">
+		<div class="t">查看请假</div>
+		<div class="pages">
+			<!--增加报销单 区域 开始-->
+			<table width="90%" border="0" cellspacing="0" cellpadding="0"
+				class="addform-base">
+				<caption>基本信息</caption>
+				<tbody>
+					<tr>
+						<td width="36%">姓名：<span class="empname"></span></td>
+						<td width="64%">部门：<span class="depname"></span></td>
+					</tr>
+					<tr>
+						<td>开始时间：<span class="sTime"></span></td>
+						<td>结束时间：<span class="eTime"></span></td>
+					</tr>
+					<tr>
+						<td>请假天数：<span class="days"></span></td>
+						<td>请假事由：<span class="event"></span></td>
+					</tr>
+					<tr>
+						<td>审批状态：<span class="ckSta"></span></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+			<p>
+				-------------------------------------------------------------------------------
+			</p>
+			<table width="90%" border="0" cellspacing="0" cellpadding="0" id="checks" class="addform-base" style="margin: 20px 0;">
+				<thead id="thead">
+					
+						<tr>
+							<td width="15%">审查人</td>
+							<td width="40%">审查意见</td>
+							<td width="30%">审查时间</td>
+							<td width="15%">审查结果</td>
+						</tr>
+					
+				</thead>
+				<tbody id="tab">
+						
+				</tbody>
+					<!--表单提交行-->
+					<tr class="check">
+						<td colspan="4" class="submit">
+							审批意见：
+						</td>
+					</tr>
+					<tr class="check">
+						<td colspan="4" class="submit">
+						<textarea rows="6" cols="50" id="comm"></textarea>
+						</td>
+					</tr>
+					<tr class="check">
+						<td colspan="4" class="submit">
+						<input type="button" value="审批通过" class="submit_01 agree">
+						</td>
+						<td colspan="4" class="submit">
+						<input type="button" value="审批拒绝" class="submit_01 refuse">
+						</td>
+					</tr>
+					<tr class="file">
+						<td colspan="4" class="submit">
+							审批意见：
+						</td>
+					</tr>
+					<tr class="file">
+						<td colspan="4" class="submit">
+						<textarea rows="6" cols="50" class="comm"></textarea>
+						</td>
+					</tr>
+					<tr class="file">
+						<td colspan="4" class="submit">
+						<input type="button" value="存档" class="submit_01 files">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4" class="submit"><input type="button"
+							value="返回" onclick="window.history.go(-1)" class="submit_01">
+						</td>
+					</tr>
+			</table>
+			<!--增加报销单 区域 结束-->
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript">
+	var leaveid=localStorage.getItem("leaveid");
+	var type=localStorage.getItem("type");
+	var emp=JSON.parse(localStorage.getItem("user"));
+	
+	if(type==0){
+		$(".check").hide();
+		$(".file").hide();
+	}else if(type==1){
+		$(".check").show();
+		$(".file").hide();
+	}else if(type==2){
+		$(".file").show();
+		$(".check").hide();
+	}
+	
+	$(".refuse").click(function(){
+		//审批拒绝
+		checkLeave(leaveid,2,10000,"确定拒绝请假吗？",4);
+	})
+	
+	$(".agree").click(function(){
+		//审批通过
+		checkLeave(leaveid,1,1017,"确定通过请假吗？",4);
+	})
+	
+	$(".files").click(function(){
+		//人事存档
+		checkLeave(leaveid,1,10000,"确定存档请假吗？",7);
+	})
+	
+	function checkLeave(leaveId,type,nextDealMan,ques,statusId){
+		if(confirm(ques)){
+			let ck={};
+			let result=false;
+			$.ajax(`/ssm_application/api/checks/check/${leaveId}/${nextDealMan}/${statusId}`,{
+				type:"put",
+				dataType:"json",
+				contentType:"application/json",
+				async:false,
+				success:function(res){
+					if(res>0){
+						result=true;
+					}else{
+						alert("审批出错");
+					}
+					location.href='qjList.html';
+				}
+			})
+			if(result){
+				ck["bizId"]=leaveId;
+				ck["typeId"]=1;
+				ck["checkMan"]=emp["employeeId"];
+				ck["checkResult"]=type;
+				if(localStorage.getItem("type")==2){
+					ck["checkComment"]=$(".comm").val();
+				}else{
+					ck["checkComment"]=$("#comm").val();
+				}
+				$.ajax(`/ssm_application/api/checks/check`,{
+					type:"post",
+					dataType:"json",
+					data:JSON.stringify(ck),
+					contentType:"application/json",
+					async:false,
+					success:function(data){
+						if(data>0){
+							alert("审批成功");
+						}
+						location.href='qjList.html';
+					}
+				})				
+			}
+		}
+	}
+	
+	function LoadDetails(){
+		$.ajax(`/ssm_application/api/leaves/leave/${leaveid}`,{
+			type:"get",
+			dataType:"json",
+			contentType:"application/json",
+			success:function(data){
+				console.info(data);
+				$(".empname").text(data.createMan);
+				$(".depname").text(data.departmentName);
+				$(".sTime").text(data.startTime);
+				$(".eTime").text(data.endTime);
+				$(".days").text(data.totalCount);
+				$(".event").text(data.event);
+				$(".ckSta").text(data.statusName);
+				$("#tab").empty();
+				if(data.checks!=""){
+					$.each(data.checks,function(i,obj){
+						let $tr=$(`<tr></tr>`);
+						$tr.append(`<td>${obj.checkMan}</td>`);
+						$tr.append(`<td>${obj.checkComment}</td>`);
+						$tr.append(`<td>${obj.checkTime}</td>`);
+						$tr.append(`<td>${obj.checkResult}</td>`);
+						$("#tab").append($tr);
+					})
+				}else{
+					$("#thead").empty();
+				}
+			}
+		})
+	}
+	LoadDetails();
+</script>
+</html>

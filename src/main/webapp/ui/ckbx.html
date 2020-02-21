@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<div class="action  divaction">
+		<div class="t">报销单列表</div>
+		<div class="pages">
+			<div class="forms">
+				<form id="myForm" name="queryForm"
+					action="../jboa/page/findList?pageNum=1&pageSize=10"
+					method="get">
+					<label>报销单状态</label> <select name="statusId"
+						id="statusId">
+						<option value="0">全部</option>
+						
+							
+								
+								
+									<option value="1">新创建</option>
+								
+							
+						
+							
+								
+								
+									<option value="2">待审批</option>
+								
+							
+						
+							
+								
+								
+									<option value="3">审批中</option>
+								
+							
+						
+							
+								
+								
+									<option value="4">已审批</option>
+								
+							
+						
+							
+								
+								
+									<option value="5">已付款</option>
+								
+							
+						
+							
+								
+								
+									<option value="6">已打回</option>
+								
+							
+						
+							
+								
+								
+									<option value="7">已存档</option>
+								
+							
+						
+					</select> <label for="time">开始时间</label> <input type="date" name="sTime"
+						value="" id="startDate" class="nwinput"> <label
+						for="end-time">结束时间</label> <input type="date" name="eTime"
+						value="" id="endDate" class="nwinput"> 
+						<select id="selectType">
+						<option value="0">个人报销</option>
+						<option id="all" value="1">部门报销</option>
+						</select>
+						<input type="button" id="claimVoucher_searchClaimVoucher_action_0" value="查询" class="submit_01">
+				</form>
+			</div>
+			<!--增加报销单 区域 开始-->
+			<form id="claimVoucher_searchClaimVoucher_action"
+				name="claimVoucherForm"
+				action="jsp/claim/claimVoucher_searchClaimVoucher.action"
+				method="post">
+				<table width="90%" border="0" cellspacing="0" cellpadding="0"
+					class="list items">
+					<thead>
+						<tr class="even">
+							<td>编号</td>
+							<td>填报日期</td>
+							<td>填报人</td>
+							<td>总金额</td>
+							<td>状态</td>
+							<td>待处理人</td>
+							<td width=20%>操作</td>
+						</tr>
+					</thead>
+					<tbody id="tab">
+						
+							<tr>
+							<td><a href="javascript:void(0)">247</a></td>
+							<td>
+								2019-08-14 15:34:56
+							</td>
+							<td>王健林</td>
+							<td>200.0</td>
+							<td>待审批</td>
+							<td>presidentXi</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="ckbx2.html"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">246</a></td>
+							<td>
+								2019-08-09 14:55:12
+							</td>
+							<td>王健林</td>
+							<td>1.0</td>
+							<td>待审批</td>
+							<td>presidentXi</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=246"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">245</a></td>
+							<td>
+								2019-08-08 20:44:24
+							</td>
+							<td>丁磊</td>
+							<td>1.11111002E9</td>
+							<td>审批中</td>
+							<td>presidentXi</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=245"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">243</a></td>
+							<td>
+								2019-08-07 18:29:40
+							</td>
+							<td>任正非</td>
+							<td>201.0</td>
+							<td>已审批</td>
+							<td>王思聪</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=243"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">242</a></td>
+							<td>
+								2019-08-07 16:12:24
+							</td>
+							<td>任正非</td>
+							<td>99.0</td>
+							<td>已打回</td>
+							<td>任正非</td>
+							<td>
+								
+								
+									
+									
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=242"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">241</a></td>
+							<td>
+								2019-08-05 21:50:51
+							</td>
+							<td>丁磊</td>
+							<td>111.0</td>
+							<td>已打回</td>
+							<td>丁磊</td>
+							<td>
+								
+								
+									
+									
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=241"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">240</a></td>
+							<td>
+								2019-08-03 14:20:37
+							</td>
+							<td>丁磊</td>
+							<td>10000.0</td>
+							<td>待审批</td>
+							<td>雷军</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=240"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">239</a></td>
+							<td>
+								2019-08-03 09:17:52
+							</td>
+							<td>任正非</td>
+							<td>1.0</td>
+							<td>已付款</td>
+							<td>无</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=239"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">238</a></td>
+							<td>
+								2019-08-03 09:08:25
+							</td>
+							<td>雷军</td>
+							<td>10.0</td>
+							<td>待审批</td>
+							<td>presidentXi</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=238"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+							<tr>
+							<td><a href="javascript:void(0)">237</a></td>
+							<td>
+								2019-08-03 09:04:36
+							</td>
+							<td>丁磊</td>
+							<td>10.0</td>
+							<td>已付款</td>
+							<td>无</td>
+							<td>
+								
+								
+								<a target="rightFrame" href="/jboa/page/getDetails?reimburseId=237"> 
+									<img src="../images/search.gif" title="查看详情" width="16" height="15">
+								</a> 
+								
+							</td>
+						</tr>
+						
+					
+						
+
+						
+					</tbody>
+					<tr>
+						<td colspan="7" align="center">
+							<div class="page-bar">
+
+								<a id="first" href="javascript:void(0);">首页</a>
+								&nbsp;&nbsp;
+								
+								&nbsp;&nbsp;
+								
+									<a id="next" href="javascript:void(0);">下一页</a>
+								
+								&nbsp;&nbsp; <a id="last" href="javascript:void(0);">末页</a>
+								
+
+								&nbsp;&nbsp; &nbsp;&nbsp;第 <span class="page"></span>页/共<span class="pagess"></span>页&nbsp;&nbsp;共<span class="count"></span>条记录
+							
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<!--增加报销单 区域 结束-->
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../js/common.js"></script>
+<script src="../js/jquery-1.12.4.js"></script>
+<script>
+$(function(){
+	$("#endDate").change(function(){
+		var sDate = $("#startDate").val();
+		var eDate = $(this).val();
+		if(sDate != ""){
+			sDate = new Date(sDate.replace(/-/g, "/"));
+			eDate = new Date(eDate.replace(/-/g, "/"));
+			var days = eDate.getTime() - sDate.getTime();
+			var time = parseInt(days / (1000 * 60 * 60 * 24));
+			if(time <= 0){
+				alert("请选择正确的日期");
+				$(this).val("");
+				return false;
+			}else{
+				$("#totalCount").text(time);
+				$("[name='totalCount']").val(time);
+			}
+		}
+	});
+});
+
+var emp=JSON.parse(localStorage.getItem("user"));
+if(emp["positionId"]==0 || emp["positionId"]==1 || emp["positionId"]==3 || emp["positionId"]==5){
+	$("#selectType").show();
+}else{
+	$("#selectType").hide();
+}
+if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+	$("#all").text("全部报销");
+}
+
+var pageInfo;
+LoadBxList(1,0,0,emp["employeeId"],0,"0","0");
+
+$("#first").click(function(){
+	if(pageInfo.isFirstPage){
+		alert("已经是第一页了");
+	}else{
+		let empid=emp["employeeId"];
+		let depid=0;
+		let statusid=$("#statusId").val();
+		let uid=emp["employeeId"];
+		if($("#selectType").val()==1){
+			depid=emp["departmentId"];
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-1;
+			}
+			empid=0;
+		}else{
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-2;
+			}
+		}
+		let stime=$("#startDate").val();
+		let etime=$("#endDate").val();
+		if(stime==""){
+			stime="0";
+		}
+		if(etime==""){
+			etime="0";
+		}
+		LoadBxList(pageInfo.firstPage,statusid,uid,empid,depid,stime,etime);
+	}
+})
+
+$("#last").click(function(){
+	if(pageInfo.isLastPage){
+		alert("已经是最后一页了");
+	}else{
+		let empid=emp["employeeId"];
+		let depid=0;
+		let statusid=$("#statusId").val();
+		let uid=emp["employeeId"];
+		if($("#selectType").val()==1){
+			depid=emp["departmentId"];
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-1;
+			}
+			empid=0;
+		}else{
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-2;
+			}
+		}
+		let stime=$("#startDate").val();
+		let etime=$("#endDate").val();
+		if(stime==""){
+			stime="0";
+		}
+		if(etime==""){
+			etime="0";
+		}
+		LoadBxList(pageInfo.lastPage,statusid,uid,empid,depid,stime,etime);
+	}
+})
+
+$("#next").click(function(){
+	if(!pageInfo.hasNextPage){
+		alert("没有下一页了");
+	}else{
+		let empid=emp["employeeId"];
+		let depid=0;
+		let statusid=$("#statusId").val();
+		let uid=emp["employeeId"];
+		if($("#selectType").val()==1){
+			depid=emp["departmentId"];
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-1;
+			}
+			empid=0;
+		}else{
+			if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+				depid=-2;
+			}
+		}
+		let stime=$("#startDate").val();
+		let etime=$("#endDate").val();
+		if(stime==""){
+			stime="0";
+		}
+		if(etime==""){
+			etime="0";
+		}
+		LoadBxList(pageInfo.nextPage,statusid,uid,empid,depid,stime,etime);
+	}
+})
+
+$("#claimVoucher_searchClaimVoucher_action_0").click(function(){
+	let empid=emp["employeeId"];
+	let depid=0;
+	let statusid=$("#statusId").val();
+	let uid=emp["employeeId"];
+	if($("#selectType").val()==1){
+		depid=emp["departmentId"];
+		if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+			depid=-1;
+		}
+		empid=0;
+	}else{
+		if(emp["positionId"]==0 || emp["positionId"]==3 || emp["positionId"]==5){
+			depid=-2;
+		}
+	}
+	let stime=$("#startDate").val();
+	let etime=$("#endDate").val();
+	if(stime==""){
+		stime="0";
+	}
+	if(etime==""){
+		etime="0";
+	}
+	if(pageInfo.firstPage == "0"){
+		pageInfo.firstPage = "1";
+	}
+	LoadBxList(pageInfo.firstPage,statusid,uid,empid,depid,stime,etime);
+})
+
+function LoadBxList(num,statusid,uid,empid,depid,sdate,edate){
+	$.ajax(`/ssm_application/api/bxs/${num}/${statusid}/${uid}/${empid}/${depid}/${sdate}/${edate}`,{
+		type:"get",
+		dataType:"json",
+		contentType:"application/json",
+		success:function(data){
+			console.info(data);
+			pageInfo=data;
+			$("#tab").empty();
+			$.each(data.list,function(i,obj){
+				let $tr=$(`<tr></tr>`);
+				let $td=$(`<td></td>`);
+				$tr.append(`
+						<td><a href="javascript:void(0)">${obj.reimburseId}</a></td>
+						<td>
+							${obj.createTime}
+						</td>
+						<td>${obj.createMan}</td>
+						<td>${obj.totalCount}.0</td>
+						<td>${obj.statusName}</td>
+						<td>${obj.nextDealMan}</td>
+						  `);
+				if(obj.statusId==1){
+					$td.append(`
+							<a target="rightFrame" href="javascript:submit(${obj.reimburseId},2);"> 
+							<img src="../images/save.gif" title="提交" width="16" height="15">
+							</a> 
+							   `);
+					$td.append(`<a target="rightFrame" href="javascript:removeBx(${obj.reimburseId});"> 
+							<img src="../images/delete.gif" title="删除" width="16" height="15">
+							</a> `);
+				}
+				$td.append(`<a target="rightFrame" href="javascript:ckbx(${obj.reimburseId},1);"> 
+						<img src="../images/search.gif" title="查看详情" width="16" height="15">
+						</a> `);
+				if(obj.nextDealMan==emp["employeeName"] &&(emp["positionId"]==0 ||emp["positionId"]==1 || emp["positionId"]==3 || emp["positionId"]==5)){
+					$td.append(`<a target="rightFrame" href="javascript:ckbx(${obj.reimburseId},2);"> 
+							<img src="../images/sub.gif" title="审批" width="16" height="15">
+							</a> `);
+				}else if((obj.nextDealMan==emp["employeeName"] || obj.statusName=="新创建")&& obj.createMan==emp["employeeName"]){
+					$td.append(`<a target="rightFrame" href="javascript:modifyBx(${obj.reimburseId});"> 
+							<img src="../images/edit.gif" title="修改" width="16" height="15">
+							</a> `);
+				}
+				$tr.append($td);
+				$("#tab").append($tr);
+			})
+			$(".page").text(data.pageNum);
+			$(".pagess").text(data.pages);
+			$(".count").text(data.total);
+		}
+	})
+}
+
+function ckbx(id,type){
+	localStorage.setItem("bxid",id);
+	localStorage.setItem("bxt",type);
+	location.href='ckbx2.html';
+}
+
+function modifyBx(id){
+	localStorage.setItem("bxid",id);
+	location.href='xgbx.html';
+}
+
+function removeBx(id){
+	if(confirm("确定删除该报销单吗？")){
+		$.ajax(`/ssm_application/api/bxs/bx/${id}`,{
+			type:"delete",
+			dataType:"json",
+			contentType:"application/json",
+			success:function(res){
+				if(res=="no"){
+					alert("服务器出现错误，请稍后再尝试");
+				}
+				location.href='ckbx.html';
+			}
+		})
+	}
+}
+
+function submit(id,sid){
+	if(confirm("确认提交该报销单吗？")){
+		$.ajax(`/ssm_application/api/bxs/bx/${id}/${sid}/${emp["pId"]}`,{
+			type:"put",
+			dataType:"json",
+			contentType:"application/json",
+			success:function(res){
+				if(res=="no"){
+					alert("服务器出现错误，请稍后再尝试");
+				}
+				location.href='ckbx.html';
+			}
+		})
+	}
+}
+   	
+</script>
+
+</html>

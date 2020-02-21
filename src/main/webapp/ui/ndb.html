@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<link href="../css/style2.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+	function submitSearch(){
+		if(document.queryForm.endYear.value < document.queryForm.startYear.value){
+			alert("请输入正确的年份区间");
+			return false;
+		}
+		document.queryForm.submit();
+		
+	}
+</script>
+</head>
+<body>
+	<div class="action  divaction">
+		<div class="t">年度统计列表</div>
+		<div class="pages">
+			<form id="compYearStatistics_getList_action" name="queryForm"
+				action="../jboa/statistics/yearList?pageNum=1&pageSize=10"
+				method="get">
+				<label for="time">开始年份</label> 
+					<select name="startYear" v-model="startyear" id="startYear" class="nwinput">
+						<option value="0">无</option>
+						
+							
+								
+								
+									<option value="2013">2013年</option>
+								
+							
+						
+							
+								
+								
+									<option value="2014">2014年</option>
+								
+							
+						
+							
+								
+								
+									<option value="2015">2015年</option>
+								
+							
+						
+							
+								
+								
+									<option value="2016">2016年</option>
+								
+							
+						
+							
+								
+								
+									<option value="2017">2017年</option>
+								
+							
+						
+							
+								
+								
+									<option value="2018">2018年</option>
+								
+							
+						
+					</select>
+				<label for="end-time">结束年份</label> 
+				<select name="endYear" v-model="endyear" id="endYear" class="nwinput">
+					<option value="0">无</option>
+					
+						
+							
+							
+								<option value="2013">2013年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2014">2014年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2015">2015年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2016">2016年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2017">2017年</option>
+							
+						
+					
+						
+							
+							
+								<option value="2018">2018年</option>
+							
+						
+					
+				</select>
+ 				<input type="button" value="提交" class="submit_01" @click="tofind">
+			</form>
+			<table width="90%" border="0" cellspacing="0" cellpadding="0"
+				class="list items">
+				<thead>
+					<tr class="even">
+						<td>编号</td>
+						<td>总计</td>
+						<td>年份</td>
+						<!--  <td>月份</td> -->
+						<!-- <td>部门</td> -->
+						<td>操作</td>
+					</tr>
+				</thead>
+				<tbody>
+					
+						<tr v-for="(info,index) in infos">
+							<td>{{index+1}}</td>
+							<td>￥{{info.money}}.0</td>
+							<td>{{info.year}}年</td>
+							<td>
+								<a href="#" @click="ndbxq(info.year,info.money)" target="rightFrame"> 
+									<img src="../images/search.gif" width="16" height="15">
+								</a>
+							</td>
+						</tr>
+						
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../js/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript">
+	var vm=new Vue({
+		el:".divaction",
+		data:{
+			infos:{},
+			employye:{},
+			startyear:{},
+			endyear:{}
+		},
+		methods:{
+			tofind(){
+				let _this=this;
+				$.getJSON(`/ssm_application/api/years/year/${this.startyear}/${this.endyear}/${this.employye.departmentId}`,function(res){
+					_this.infos=res;
+				})
+			},
+			ndbxq(year,sum){
+				localStorage.setItem("year",year);
+				localStorage.setItem("sum",sum);
+				location.href='ndbxq.html';
+			}
+		},
+		mounted:function(){
+			let _this=this;
+			$.getJSON(`/ssm_application/api/users/user/session`,function(res){
+				_this.employye=res;
+				$.ajax(`/ssm_application/api/years/year/0/0/${_this.employye.departmentId}`,{
+					type:"get",
+					dataType:"json",
+					contentType:"application/json",
+					success:function(data){
+						_this.infos=data;
+					}
+				})
+			})
+		}
+	})
+</script>
+</html>
